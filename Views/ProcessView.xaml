@@ -1,0 +1,365 @@
+﻿<UserControl x:Class="MyToDo1.Views.ProcessView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:prism="http://prismlibrary.com/"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:ext="clr-namespace:MyToDo1.Extentions"
+             xmlns:models="clr-namespace:MyToDo1.Common.Models" 
+             xmlns:viewmodels="clr-namespace:MyToDo1.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewmodels:ProcessViewModel}"
+             xmlns:local="clr-namespace:MyToDo1.Views"
+             xmlns:behaviors="clr-namespace:MyToDo1.Behaviors"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             FontFamily="Segoe UI">
+
+    <!-- 在UserControl.Resources中定义Storyboard -->
+    <UserControl.Resources>
+        <Storyboard x:Key="LoadingAnimationStoryboard" RepeatBehavior="Forever">
+            <DoubleAnimation
+                Storyboard.TargetName="arcRotateTransform"
+                Storyboard.TargetProperty="(RotateTransform.Angle)"
+                From="0" To="360"
+                Duration="0:0:2" />
+        </Storyboard>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Process" FontSize="30" Margin="20,20" VerticalAlignment="Bottom" FontWeight="UltraBold"/>
+
+        <Border BorderBrush="#dddddd" BorderThickness="0,0,0,1"/>
+        
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+
+                <Grid Grid.Row="0" Margin="0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border 
+Margin="15,0" 
+CornerRadius="10" 
+Opacity="0.1"
+Background="#BEBEBE"
+                        Grid.ColumnSpan="2"/>
+                    <Border 
+Grid.Column="2"
+Margin="15,0" 
+CornerRadius="10" 
+Opacity="0.1"
+Background="#BEBEBE"/>
+                      
+                    <StackPanel Name="SelectInputSatckPanel" Orientation="Vertical" HorizontalAlignment="Left" Margin="20,0">
+                        <TextBlock Text="Input Folder" FontSize="20" HorizontalAlignment="Left" Margin="10"/>
+                        <TextBox Name="folderPathTextBox" Text="-" HorizontalAlignment="Left" Margin="10"/>
+                        <Button Name="selectFolderPathBtn" Content="Select Input Folder"  HorizontalAlignment="Left" Margin="10,10,10,20" Style="{StaticResource MaterialDesignPaperButton}"/>
+                    </StackPanel>
+                    <StackPanel Name="SelectManyInputSatckPanel" Orientation="Vertical" HorizontalAlignment="Left" Margin="20,0">
+                        <TextBlock Text="Input Folders" FontSize="20" HorizontalAlignment="Left" Margin="10"/>
+                        <TextBox Name="manyFolderPathTextBox" Text="-" HorizontalAlignment="Left" Margin="10"/>
+                        <Button Name="selectManyFolderPathBtn" Content="Select Multiple Folders"  HorizontalAlignment="Left" Margin="10,10,10,20" Style="{StaticResource MaterialDesignPaperButton}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Bottom" Margin="20">
+                        <!--CheckBox Content="Choose Multiple Folders?" VerticalAlignment="Bottom" Checked="CheckBoxChecked" Unchecked="CheckBoxUnchecked" Margin="0,10,0,10" HorizontalAlignment="Left"-->
+                        <TextBlock Text="Unsure about the parameters?" Margin="10" HorizontalAlignment="Left" />
+                        <!-- Button Content="Go to Preview" Command="{Binding NavigateToPreviewCommand}" Style="{StaticResource MaterialDesignPaperButton}" VerticalAlignment="Bottom"/-->
+                        <Button Content="Preview an Image" Command="{Binding PreviewAnImageCommand}" Style="{StaticResource MaterialDesignPaperButton}" VerticalAlignment="Bottom" Margin="10, 0" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="20,0" Grid.Column="2">
+                        <TextBlock Text="Output Folder" FontSize="20" HorizontalAlignment="Left" Margin="10"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <TextBox Name="outputDirTextBox" Text="-" HorizontalAlignment="Left" Margin="10"/>
+                            <Button Content="Copy" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="8" Style="{StaticResource MaterialDesignPaperButton}"/>
+                        </StackPanel>
+                        <Button Name="selectOutputDirButton" Content="Select Output Folder" HorizontalAlignment="Left" Margin="10,10,10,20" Style="{StaticResource MaterialDesignPaperButton}"/>
+                    </StackPanel>
+
+                    
+
+                </Grid>
+
+
+                <Grid Grid.Row="1" Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Border 
+Grid.Column="0"
+Margin="15,0" 
+CornerRadius="10" 
+Opacity="0.1"
+Background="#BEBEBE"/>
+                    <Border 
+Grid.Column="1"
+Margin="15,0" 
+CornerRadius="10" 
+Opacity="0.1"
+Background="#BEBEBE"/>
+                    <Border 
+Grid.Column="2"
+Margin="15,0" 
+CornerRadius="10" 
+Opacity="0.1"
+Background="#BEBEBE"/>
+                    <Border 
+Grid.Column="3"
+Margin="15,0" 
+CornerRadius="10" 
+Opacity="0.1"
+Background="#BEBEBE"/>
+                    
+                    <!--StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="20,0,30,0" Grid.Column="0">
+                        <TextBlock Text="Low HSV" FontSize="20" HorizontalAlignment="Left" Margin="10"/>
+                        <materialDesign:NumericUpDown Name="lowThresholdNumericUD" AllowChangeOnScroll="True" Value="90"  HorizontalAlignment="Left" Margin="10,40,10,20" />
+                    </StackPanel-->
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="30,0,30,10">
+
+                        <!-- 下限 HSV -->
+                        <TextBlock Text="Lower HSV:" FontSize="16" FontWeight="Medium" Margin="0, 15"/>
+
+                        <!-- Lower H -->
+                        <DockPanel LastChildFill="False" Margin="0,5">
+                            <TextBlock Text="Lower H:" FontSize="16" FontWeight="Light" VerticalAlignment="Center"/>
+                            <Slider x:Name="lowerHSlider" Maximum="180" Minimum="0" Width="230" Margin="15,0"
+                Value="{Binding LowerH, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ElementName=lowerHSlider, Path=Value, StringFormat='{}{0:0}'}" 
+                   FontSize="16" VerticalAlignment="Center" Margin="10,0"/>
+                        </DockPanel>
+
+                        <!-- Lower S -->
+                        <DockPanel LastChildFill="False" Margin="0,5">
+                            <TextBlock Text="Lower S:" FontSize="16" FontWeight="Light" VerticalAlignment="Center"/>
+                            <Slider x:Name="lowerSSlider" Maximum="255" Minimum="0" Width="230" Margin="15,0"
+                Value="{Binding LowerS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ElementName=lowerSSlider, Path=Value, StringFormat='{}{0:0}'}" 
+                   FontSize="16" VerticalAlignment="Center" Margin="10,0"/>
+                        </DockPanel>
+
+                        <!-- Lower V -->
+                        <DockPanel LastChildFill="False" Margin="0,5">
+                            <TextBlock Text="Lower V:" FontSize="16" FontWeight="Light" VerticalAlignment="Center"/>
+                            <Slider x:Name="lowerVSlider" Maximum="255" Minimum="0" Width="230" Margin="15,0"
+                Value="{Binding LowerV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ElementName=lowerVSlider, Path=Value, StringFormat='{}{0:0}'}" 
+                   FontSize="16" VerticalAlignment="Center" Margin="10,0,10,10"/>
+                        </DockPanel>
+                    </StackPanel>
+                    <!--StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="20,0,30,0" Grid.Column="1">
+                        <TextBlock Text="High HSV" FontSize="20" HorizontalAlignment="Left" Margin="10"/>
+                        <materialDesign:NumericUpDown Name="highThresholdNumericUD" AllowChangeOnScroll="True" Value="160" HorizontalAlignment="Left" Margin="10,40,10,20"/>
+                    </StackPanel-->
+
+                    <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Left" Margin="30,0,30,10">
+
+                        <!-- 上限 HSV -->
+                        <TextBlock Text="Higher HSV:" FontSize="16" FontWeight="Medium" Margin="0, 15"/>
+
+                        <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,5">
+                            <TextBlock Text="Higher H:" FontSize="16" FontWeight="Light" VerticalAlignment="Center"/>
+                            <Slider x:Name="higherHSlider" Maximum="180" Minimum="0" Width="230" Margin="15,0"
+                Value="{Binding HigherH, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ElementName=higherHSlider, Path=Value, StringFormat='{}{0:0}'}" 
+                   FontSize="16" VerticalAlignment="Center" Margin="10,0"/>
+                        </DockPanel>
+
+                        <!-- Higher S -->
+                        <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,5">
+                            <TextBlock Text="Higher S:" FontSize="16" FontWeight="Light" VerticalAlignment="Center"/>
+                            <Slider x:Name="higherSSlider" Maximum="255" Minimum="0" Width="230" Margin="15,0"
+                Value="{Binding HigherS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ElementName=higherSSlider, Path=Value, StringFormat='{}{0:0}'}" 
+                   FontSize="16" VerticalAlignment="Center" Margin="10,0"/>
+                        </DockPanel>
+
+                        <!-- Higher V -->
+                        <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,5">
+                            <TextBlock Text="Higher V:" FontSize="16" FontWeight="Light" VerticalAlignment="Center"/>
+                            <Slider x:Name="higherVSlider" Maximum="255" Minimum="0" Width="230" Margin="15,0"
+                Value="{Binding HigherV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ElementName=higherVSlider, Path=Value, StringFormat='{}{0:0}'}" 
+                   FontSize="16" VerticalAlignment="Center" Margin="10,0,10,10"/>
+                        </DockPanel>
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="20,0,30,0" Grid.Column="2">
+                        <TextBlock Text="Number" FontSize="20" HorizontalAlignment="Left" Margin="10"/>
+                        <materialDesign:NumericUpDown Name="numberNumericUD" AllowChangeOnScroll="True" Value="5" HorizontalAlignment="Left" Margin="10,40,10,20"/>
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="20,0,30,0" Grid.Column="3" >
+                        <TextBlock Text="Channel" FontSize="20" HorizontalAlignment="Left" Margin="10"/>
+                        <ComboBox Name="channelComboBox" HorizontalAlignment="Left" Margin="10,40,10,20" Width="70">
+                            <ComboBoxItem Content="blue"/>
+                            <ComboBoxItem Content="red"/>
+                            <ComboBoxItem Content="green"/>
+                            <ComboBoxItem Content="gray"/>
+                        </ComboBox>
+                    </StackPanel>
+
+                    
+
+                </Grid>
+
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Border 
+Grid.Column="0"
+Margin="15,0" 
+CornerRadius="10" 
+Opacity="0.1"
+Background="#BEBEBE"/>
+                    <Border 
+Grid.Column="1"
+Margin="15,0" 
+CornerRadius="10" 
+Opacity="0.1"
+Background="#BEBEBE"/>
+                    <Border 
+Grid.Column="2"
+Margin="15,0" 
+CornerRadius="10" 
+Opacity="0.1"
+Background="#BEBEBE"/>
+
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="30,0,30,10" Grid.Column="0">
+                        <TextBlock Text="Sensitive Parameters:" FontSize="16" FontWeight="Medium" HorizontalAlignment="Left" Margin="0,15"/>
+
+                        <DockPanel LastChildFill="False" Margin="0,5">
+                            <TextBlock Text="Minumum Area: " FontSize="16" FontWeight="Light" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <materialDesign:NumericUpDown Name="minAreaNumericUD" AllowChangeOnScroll="True" Value="2000" 
+                                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0" 
+                                      DockPanel.Dock="Right"/>
+                        </DockPanel>
+
+                        <DockPanel LastChildFill="False" Margin="0,5">
+                            <TextBlock Text="Minumum Perimeter: " FontSize="16" FontWeight="Light" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <materialDesign:NumericUpDown Name="minPerimeterNumericUD" AllowChangeOnScroll="True" Value="100" 
+                                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0" 
+                                      DockPanel.Dock="Right"/>
+                        </DockPanel>
+
+                        <DockPanel LastChildFill="False" Margin="0,5">
+                            <TextBlock Text="Maxiumum Perimeter: " FontSize="16" FontWeight="Light" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <materialDesign:NumericUpDown Name="maxPerimeterNumericUD" AllowChangeOnScroll="True" Value="5000" 
+                                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0" 
+                                      DockPanel.Dock="Right"/>
+                        </DockPanel>
+                    </StackPanel>
+
+
+                    <StackPanel Margin="30,0,30,10" Orientation="Vertical" HorizontalAlignment="Left" Grid.Column="1">
+                        <TextBlock Text="Sensitive Parameters:" FontSize="16" FontWeight="Medium" HorizontalAlignment="Left" Margin="0,15"/>
+
+                        <!-- Maximum Roughness -->
+                        <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,5">
+                            <TextBlock Text="Maximum Roughness:" FontSize="16" FontWeight="Light" VerticalAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                                <Slider x:Name="maxRoughnessSlider" Maximum="1" Minimum="0" Width="230" Margin="15,0"
+                Value="{Binding MaximumRoughness, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding ElementName=maxRoughnessSlider, Path=Value, StringFormat='{}{0:F2}'}" 
+                   FontSize="16" VerticalAlignment="Center" Margin="10,0"/>
+                            </StackPanel>
+                        </DockPanel>
+
+                        <!-- Minimum Circularity -->
+                        <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,5">
+                            <TextBlock Text="Minimum Circularity:" FontSize="16" FontWeight="Light" VerticalAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                                <Slider x:Name="minCircularitySlider" Maximum="1" Minimum="0" Width="230" Margin="15,0"
+Value="{Binding MinimumCircularity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                <TextBlock Text="{Binding ElementName=minCircularitySlider, Path=Value, StringFormat='{}{0:F2}'}" 
+   FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0"/>
+                            </StackPanel>
+                            
+                        </DockPanel>
+
+                        <!-- Reference -->
+                        <DockPanel DockPanel.Dock="Top" LastChildFill="True" Margin="0,5">
+                            <TextBlock Text="Reference:" FontSize="16" FontWeight="Light" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                                <Slider x:Name="referenceSlider" Maximum="255" Minimum="0" Width="230" Margin="15,0"
+Value="{Binding Reference, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding ElementName=referenceSlider, Path=Value, StringFormat='{}{0:0}'}" 
+   FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,5,10,0"/>
+                            </StackPanel>
+                            
+                        </DockPanel>
+                    </StackPanel>
+
+
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="20,0,30,20" Grid.Column="2">
+                        <TextBlock Text="Material" FontSize="20" HorizontalAlignment="Left" Margin="10"/>
+                        <ComboBox Name="materialComboBox" HorizontalAlignment="Left" Margin="10" Width="70">
+                            <ComboBoxItem Content="hBN"/>
+                            <ComboBoxItem Content="Graphene"/>
+                            <ComboBoxItem Content="MoTe2"/>
+                        </ComboBox>
+                    </StackPanel>
+
+                    
+                </Grid>
+
+                <StackPanel Orientation="Horizontal" Grid.Row="3" HorizontalAlignment="Center">
+                    <Button x:Name="startPythonBtn" Content="Click Here to Start Python Script" Margin="30" Style="{StaticResource MaterialDesignPaperButton}"/>
+                    <Grid>
+                        <!-- 圆环 -->
+                        <Ellipse x:Name="loadingAnimation" Width="50" Height="50" Stroke="Gray" StrokeThickness="10" 
+             HorizontalAlignment="Center" VerticalAlignment="Center" 
+             RenderTransformOrigin="0.5,0.5" Visibility="Collapsed" />
+
+                        <!-- 弧线，占圆环的1/4，带有圆角 -->
+                        <Path Name="loadingPath" Stroke="{StaticResource MaterialDesignDarkSeparatorBackground}" StrokeThickness="10" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" 
+          HorizontalAlignment="Center" VerticalAlignment="Center" 
+          Visibility="Collapsed" Fill="Transparent" RenderTransformOrigin="0.5,0.5">
+                            <Path.Data>
+                                <PathGeometry>
+                                    <!-- 调整StartPoint和ArcSegment，以使它们与Ellipse对齐，并占1/4圆周 -->
+                                    <PathFigure StartPoint="25,5">
+                                        <!-- 圆环的顶部中点 -->
+                                        <ArcSegment Point="25,45" Size="20,20" SweepDirection="Clockwise" />
+                                        <!-- 圆环的右侧中点，形成90度的弧线 -->
+                                    </PathFigure>
+                                </PathGeometry>
+                            </Path.Data>
+                            <!-- 旋转变换，用于旋转弧线 -->
+                            <Path.RenderTransform>
+                                <RotateTransform x:Name="arcRotateTransform" />
+                            </Path.RenderTransform>
+                        </Path>
+                    </Grid>
+                    <TextBlock Name="processingTextBlock" Text="Processing..." Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
+
+
+                </StackPanel>
+                
+
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+    
+</UserControl>

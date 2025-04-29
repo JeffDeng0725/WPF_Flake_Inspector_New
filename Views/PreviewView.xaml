@@ -1,0 +1,216 @@
+﻿<UserControl x:Class="MyToDo1.Views.PreviewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+     xmlns:local="clr-namespace:MyToDo1.Views"
+     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:viewmodels="clr-namespace:MyToDo1.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:PreviewViewModel}"
+     mc:Ignorable="d" 
+     d:DesignHeight="450" d:DesignWidth="800"
+     FontFamily="Segoe UI">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <StackPanel  Orientation="Horizontal">
+            <TextBlock Text="Preview" FontSize="30" Margin="20" VerticalAlignment="Bottom" FontWeight="UltraBold"/>
+            <TextBlock Name="DateTextBlock" FontSize="20" Margin="0,20" VerticalAlignment="Bottom"/>
+        </StackPanel>
+
+        <Border BorderBrush="#dddddd" BorderThickness="0,0,0,1"/>
+
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding TaskBars}" Margin="0,15,0,0">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="4"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="{Binding Color}" Margin="15,0" CornerRadius="10">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Effect">
+                                            <Setter.Value>
+                                                <DropShadowEffect
+                                            Color="#DDDDDD"
+                                            ShadowDepth="1"
+                                            BlurRadius="10"/>
+                                            </Setter.Value>
+                                        </Setter>
+
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <Grid>
+                            <StackPanel Margin="20,20" HorizontalAlignment="Left">
+                                <materialDesign:PackIcon 
+                            Kind="{Binding Icon}" 
+                            Width="30"
+                            Height="30"/>
+
+                                <TextBlock 
+                            Text="{Binding Title}" 
+                            Margin="0,15"
+                            FontSize="24"
+                            FontWeight="Bold"/>
+
+                                <TextBlock 
+                            Text="{Binding Content}" 
+                            FontWeight="Bold"
+                            FontSize="40"/>
+
+                            </StackPanel>
+
+                            <Canvas ClipToBounds="True">
+                                <Border Canvas.Top="10" Canvas.Right="-50"
+                                Width="120" Height="120"
+                                Background="#FFFFFF"
+                                Opacity="0.1"
+                                CornerRadius="100"/>
+                                <Border Canvas.Top="80" Canvas.Right="-30"
+                                Width="120" Height="120"
+                                Background="#FFFFFF"
+                                Opacity="0.1"
+                                CornerRadius="100"/>
+                            </Canvas>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Grid Grid.Row="2" Margin="0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Border 
+            Grid.Column="0"
+            Margin="15,0" 
+            CornerRadius="10" 
+            Opacity="0.1"
+            Background="#BEBEBE"/>
+
+            <Border 
+            Grid.Column="1"
+            Margin="15,0" 
+            CornerRadius="10" 
+            Opacity="0.1"
+            Background="#BEBEBE"/>
+
+            <DockPanel Margin="15,0">
+                <DockPanel  Margin="15,15" DockPanel.Dock="Top" LastChildFill="False">
+                    <TextBlock Text="Parameters"
+                       FontSize="24"
+                       FontWeight="Bold"/>
+                    
+                </DockPanel>
+                
+                
+
+                <StackPanel
+                Margin="15,-15"
+                Orientation="Vertical">
+
+                    <!-- 下限 HSV -->
+                    <TextBlock Text="Lower HSV:" FontSize="16" FontWeight="Medium" Margin="0, 15"/>
+
+                    <DockPanel DockPanel.Dock="Top" LastChildFill="False">
+                        <TextBlock Text="Lower H: " FontSize="16" FontWeight="Light"/>
+                        <Slider 
+                                Maximum="180" Minimum="0" Width="230" Margin="15,0"
+                                Value="{Binding LowerH, Mode=TwoWay}"/>
+                    </DockPanel>
+
+                    <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,5">
+                        <TextBlock Text="Lower S: " FontSize="16" FontWeight="Light"/>
+                        <Slider 
+                                Maximum="255" Minimum="0" Width="230" Margin="15,0"
+                                Value="{Binding LowerS, Mode=TwoWay}"/>
+                    </DockPanel>
+
+                    <DockPanel DockPanel.Dock="Top" LastChildFill="False">
+                        <TextBlock Text="Lower V: " FontSize="16" FontWeight="Light"/>
+                        <Slider 
+                                Maximum="255" Minimum="0" Width="230" Margin="15,0"
+                                Value="{Binding LowerV, Mode=TwoWay}"/>
+                    </DockPanel>
+
+                    <!-- 上限 HSV -->
+                    <TextBlock Text="Higher HSV:" FontSize="16" FontWeight="Medium" Margin="0, 15"/>
+
+                    <DockPanel DockPanel.Dock="Top" LastChildFill="False">
+                        <TextBlock Text="Higher H: " FontSize="16" FontWeight="Light"/>
+                        <Slider 
+                                Maximum="180" Minimum="0" Width="230" Margin="15,0"
+                                Value="{Binding HigherH, Mode=TwoWay}"/>
+                    </DockPanel>
+
+                    <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,5">
+                        <TextBlock Text="Higher S: " FontSize="16" FontWeight="Light"/>
+                        <Slider 
+                                Maximum="255" Minimum="0" Width="230" Margin="15,0"
+                                Value="{Binding HigherS, Mode=TwoWay}"/>
+                    </DockPanel>
+
+                    <DockPanel DockPanel.Dock="Top" LastChildFill="False">
+                        <TextBlock Text="Higher V: " FontSize="16" FontWeight="Light"/>
+                        <Slider 
+                                Maximum="255" Minimum="0" Width="230" Margin="15,0"
+                                Value="{Binding HigherV, Mode=TwoWay}"/>
+                    </DockPanel>
+
+                </StackPanel>
+
+
+
+
+
+            </DockPanel>
+
+            <DockPanel Margin="15,0" Grid.Column="1">
+                <DockPanel
+            Margin="15,15"
+            DockPanel.Dock="Top"
+            LastChildFill="False">
+
+
+                    <DockPanel DockPanel.Dock="Top" LastChildFill="False">
+                        <TextBlock 
+        Text="Image Preview"
+        FontSize="24"
+        FontWeight="Bold"/>
+
+                        <Button x:Name="UploadPreviewImageButton" Content="Upload" Margin="15,0" Width="100" HorizontalAlignment="Right" Command="{Binding UploadPreviewImageCommand}" />
+                        <Button x:Name="ShutDownButton" Content="Shutdown" Margin="15,0" Width="100" HorizontalAlignment="Right" Command="{Binding ShutDoownCommand}" />
+
+                    </DockPanel>
+
+                </DockPanel>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Image Grid.Row="0" Source="{Binding ResultImage}" Stretch="Uniform" Margin="10"/>
+                    <!--<Image Grid.Row="1" Source="{Binding ResultImage}" Stretch="Uniform" Margin="10"/>-->
+                </Grid>
+
+            </DockPanel>
+
+        </Grid>
+
+
+    </Grid>
+</UserControl>
