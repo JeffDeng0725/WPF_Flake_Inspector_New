@@ -25,6 +25,9 @@
     <None Update="PythonScripts\ImageProcess.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="PythonScripts\ImageProcess3_HSV.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="PythonScripts\preview.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -11,22 +11,26 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using System.Windows;
 using System.Windows.Media.Media3D;
 using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace MyToDo1.ViewModels
 {
     internal class DetailViewModel : NavigationViewModel
     {
-        Object material = new Object();
-        Object time = new Object();
+        object material = new object();
+        object time = new object();
+        object inputFolder = new object();
         string folderPath;
         int lowThreshold;
         int highThreshold;
@@ -47,11 +51,12 @@ namespace MyToDo1.ViewModels
             contourImagePath = "";
             thresholdImagePath = "";
             imagePaths = new List<string>();
+            numbers = new List<int>();
             DetailBars = new ObservableCollection<DetailBar>();
             ViewCommand = new DelegateCommand<DetailBar>(ViewDetails);
             LikeCommand = new DelegateCommand(Like);
             ImageClickCommand = new DelegateCommand(ImageClick);
-            imageType = ".jpg";
+            imageType = ".png";
             isLikedPara = false;
         }
 
@@ -119,7 +124,10 @@ namespace MyToDo1.ViewModels
         private string originalImagePath;
         private string contourImagePath;
         private string thresholdImagePath;
+
+
         private List<string> imagePaths;
+        private List<int> numbers;
         public string OriginalImagePath
         {
             get => originalImagePath;
@@ -141,6 +149,7 @@ namespace MyToDo1.ViewModels
         {
             get => imagePaths; set => imagePaths = value;
         }
+
         private ObservableCollection<int> thresholdsItemsource;
         public ObservableCollection<int> ThresholdsItemSource
         {
@@ -154,6 +163,7 @@ namespace MyToDo1.ViewModels
             get { return thresholds; }
             set { thresholds = value; }
         }
+
         private int _selectedThreshold;
         public int SelectedThreshold
         {
@@ -164,6 +174,7 @@ namespace MyToDo1.ViewModels
                 Updatedetails();
             }
         }
+
         private DetailBar currentDetailBar;
         public DetailBar CurrentDetailBar
         {
@@ -171,8 +182,8 @@ namespace MyToDo1.ViewModels
             set { currentDetailBar = value; RaisePropertyChanged(); }
         }
 
-        private Boolean isLikedPara;
-        public Boolean IsLikedPara
+        private bool isLikedPara;
+        public bool IsLikedPara
         {
             get { return isLikedPara; }
             set
@@ -185,11 +196,23 @@ namespace MyToDo1.ViewModels
             }
         }
 
-        private Boolean showDialog;
-        public Boolean ShowDialog
+        private bool showDialog;
+        public bool ShowDialog
         {
             get { return showDialog; }
             set { showDialog = value; RaisePropertyChanged(); }
+        }
+
+        private bool _isFilterOn = true;
+        public bool IsFilterOn
+        {
+            get => _isFilterOn;
+            set
+            {
+                _isFilterOn = !_isFilterOn;
+                CreateDetailBars();
+                RaisePropertyChanged();
+            }
         }
 
 
@@ -207,11 +230,14 @@ namespace MyToDo1.ViewModels
         {
 
             imagePaths.Clear();
+            numbers.Clear();
 
             base.OnNavigatedTo(navigationContext);
 
-            material = new Object();
-            time = new Object();
+            material = new object();
+            time = new object();
+            inputFolder = new object();
+            // _isFilterOn = true;
 
             if (navigationContext.Parameters.ContainsKey("Material"))
             {
@@ -222,6 +248,12 @@ namespace MyToDo1.ViewModels
             {
                 time = navigationContext.Parameters["Time"];
             }
+
+            if (navigationContext.Parameters.ContainsKey("InputFolder"))
+            {
+                inputFolder = navigationContext.Parameters["InputFolder"];
+            }
+
             // 获取当前运行目录
             string exeDirectory = AppDomain.CurrentDomain.BaseDirectory; // 获取当前 exe 文件所在的目录
             string processedImagePath = Path.Combine(exeDirectory, "Processed_Image"); // 构建指向 "Processed_Image" 文件夹的路径
@@ -230,62 +262,85 @@ namespace MyToDo1.ViewModels
             string[] fileNames = Directory.GetFiles(folderPath);
 
             // 遍历所有文件名
-            foreach (string path in fileNames)
-            {
-                string fileName = Path.GetFileName(path);  // 仅获取文件名部分
+            //foreach (string path in fileNames)
+            //{
+            //    string fileName = Path.GetFileName(path);  // 仅获取文件名部分
 
-                // 检查文件名是否包含 "original"
-                if (fileName.Contains("original"))
-                {
-                    // 分割字符串并获取 _original 之前的部分
-                    string baseName = fileName.Split(new[] { "_original" }, StringSplitOptions.None)[0];
-                    imagePaths.Add(baseName);
-                }
+            //    // 检查文件名是否包含 "original"
+            //    if (fileName.Contains("original"))
+            //    {
+            //        // 分割字符串并获取 _original 之前的部分
+            //        string baseName = fileName.Split(new[] { "_original" }, StringSplitOptions.None)[0];
+            //        imagePaths.Add(baseName);
+            //    }
+            //}
+
+            foreach (var path in fileNames)
+            {
+                // 去掉扩展名并取文件名
+                var name = Path.GetFileNameWithoutExtension(path);
+                // 找到最后一个下划线的位置
+                var idx = name.LastIndexOf('_');
+
+                // 拆出 baseName 和 baseNameNumber
+                var baseName = idx > 0 ? name.Substring(0, idx) : name;
+                var baseNameNumber = idx >= 0 ? name.Substring(idx + 1) : string.Empty;
+
+                // 把基础名前缀加入列表
+                imagePaths.Add(baseName);
+
+                // 如果需要，也可以把数字存到另一个集合，比如：
+                numbers.Add(int.Parse(baseNameNumber));
             }
+
             // imagePaths.Reverse();
             CreateDetailBars();
 
-            string dataFilePath = Path.Combine(folderPath, "data.json");
+            //string dataFilePath = Path.Combine(folderPath, "data.json");
 
-            if (File.Exists(dataFilePath))
-            {
-                string jsonContent = File.ReadAllText(dataFilePath);
-                JObject jsonObj = JObject.Parse(jsonContent);
-                var x1Value = jsonObj["x_1"]?.ToString();
-                var x2Value = jsonObj["x_2"]?.ToString();
-                var y1Value = jsonObj["y_1"]?.ToString();
-                var y2Value = jsonObj["y_1"]?.ToString();
-                var xStepLength = jsonObj["xStepLength"]?.ToString();
-                var yStepLength = jsonObj["yStepLength"]?.ToString();
+            //if (File.Exists(dataFilePath))
+            //{
+            //    string jsonContent = File.ReadAllText(dataFilePath);
+            //    JObject jsonObj = JObject.Parse(jsonContent);
+            //    var x1Value = jsonObj["x_1"]?.ToString();
+            //    var x2Value = jsonObj["x_2"]?.ToString();
+            //    var y1Value = jsonObj["y_1"]?.ToString();
+            //    var y2Value = jsonObj["y_1"]?.ToString();
+            //    var xStepLength = jsonObj["xStepLength"]?.ToString();
+            //    var yStepLength = jsonObj["yStepLength"]?.ToString();
 
-            }
-            else
-            {
-                // 处理文件不存在的情况
-            }
+            //}
+            //else
+            //{
+            //    // 处理文件不存在的情况
+            //}
 
-            string parametersFilePath = Path.Combine(folderPath, "parameters.json");
+            //string parametersFilePath = Path.Combine(folderPath, "parameters.json");
 
-            if (File.Exists(parametersFilePath))
-            {
-                string jsonContent = File.ReadAllText(parametersFilePath);
-                JObject jsonObj = JObject.Parse(jsonContent);
-                lowThreshold = jsonObj["LowThreshold"] != null ? Convert.ToInt32(jsonObj["LowThreshold"]) : 100;
-                highThreshold = jsonObj["HighThreshold"] != null ? Convert.ToInt32(jsonObj["HighThreshold"]) : 170;
-                number = jsonObj["Number"] != null ? Convert.ToInt32(jsonObj["Number"]) : 5;
+            //if (File.Exists(parametersFilePath))
+            //{
+            //    string jsonContent = File.ReadAllText(parametersFilePath);
+            //    JObject jsonObj = JObject.Parse(jsonContent);
+            //    lowThreshold = jsonObj["LowThreshold"] != null ? Convert.ToInt32(jsonObj["LowThreshold"]) : 100;
+            //    highThreshold = jsonObj["HighThreshold"] != null ? Convert.ToInt32(jsonObj["HighThreshold"]) : 170;
+            //    number = jsonObj["Number"] != null ? Convert.ToInt32(jsonObj["Number"]) : 5;
 
-                thresholds = Linspace(lowThreshold, highThreshold, number);
-                ThresholdsItemSource = new ObservableCollection<int>(thresholds);
-                Debug.WriteLine(ThresholdsItemSource.ToList<int>());
-            }
-            else
-            {
-                // 处理文件不存在的情况
-            }
-            SelectedThreshold = ThresholdsItemSource[0];
-            OriginalImagePath = folderPath + "\\" + defaultDetailBar.FileName + "_original" + imageType;
-            ContourImagePath = folderPath + "\\" + defaultDetailBar.FileName + "_contours_" + SelectedThreshold.ToString() + imageType;
-            ThresholdImagePath = folderPath + "\\" + defaultDetailBar.FileName + "_threshold_" + SelectedThreshold.ToString() + imageType;
+            //    thresholds = Linspace(lowThreshold, highThreshold, number);
+            //    ThresholdsItemSource = new ObservableCollection<int>(thresholds);n
+            //    Debug.WriteLine(ThresholdsItemSource.ToList<int>());
+            //}
+            //else
+            //{
+            //    // 处理文件不存在的情况
+            //}
+
+
+            //SelectedThreshold = ThresholdsItemSource[0];
+
+            // OriginalImagePath = inputFolder + "\\" + defaultDetailBar.FileName + imageType;
+            ContourImagePath = folderPath + "\\" + defaultDetailBar.FileName +"_" + defaultDetailBar.DtoNumber + imageType;
+
+            //ThresholdImagePath = folderPath + "\\" + defaultDetailBar.FileName + "_threshold_" + SelectedThreshold.ToString() + imageType;
 
             CurrentDetailBar = DetailBars[0];
             isLikedPara = CurrentDetailBar.IsLiked;
@@ -299,9 +354,9 @@ namespace MyToDo1.ViewModels
             if (obj == null || string.IsNullOrWhiteSpace(obj.FileName))
                 return;
 
-            OriginalImagePath = folderPath + "\\" + obj.FileName + "_original" + imageType;
-            ContourImagePath = folderPath + "\\" + obj.FileName + "_contours_" + SelectedThreshold.ToString() + imageType;
-            ThresholdImagePath = folderPath + "\\" + obj.FileName + "_threshold_" + SelectedThreshold.ToString() + imageType;
+            // OriginalImagePath = inputFolder + "\\" + obj.FileName + imageType;
+            ContourImagePath = folderPath + "\\" + obj.FileName + "_" + obj.DtoNumber + imageType;
+            // ThresholdImagePath = folderPath + "\\" + obj.FileName + "_threshold_" + SelectedThreshold.ToString() + imageType;
 
             CurrentDetailBar = obj;
             isLikedPara = CurrentDetailBar.IsLiked;
@@ -321,11 +376,42 @@ namespace MyToDo1.ViewModels
         void CreateDetailBars()
         {
             DetailBars.Clear();
+            var prefixIndext = 0;
+            int prefixIndex = 0;
             foreach (string prefix in imagePaths)
             {
-                DetailBars.Add(new DetailBar() { Title = prefix, FileName = prefix, NameSpace = "DetailView", IsLiked = false});
+                if (!_isFilterOn)
+                {
+                    // 不过滤，直接加
+                    DetailBars.Add(new DetailBar
+                    {
+                        Title = $"{prefix}_{numbers[prefixIndex]}",
+                        FileName = prefix,
+                        NameSpace = "DetailView",
+                        IsLiked = false,
+                        DtoNumber = numbers[prefixIndex]
+                    });
+                }
+                else
+                {
+                    // 过滤：只有 numbers[prefixIndex] != 0 时才加
+                    if (numbers[prefixIndex] != 0)
+                    {
+                        DetailBars.Add(new DetailBar
+                        {
+                            Title = $"{prefix}_{numbers[prefixIndex]}",
+                            FileName = prefix,
+                            NameSpace = "DetailView",
+                            IsLiked = false,
+                            DtoNumber = numbers[prefixIndex]
+                        });
+                    }
+                }
+
+                prefixIndex++;
             }
-            defaultDetailBar = DetailBars[0];
+
+        defaultDetailBar = DetailBars[0];
         }
 
         static List<int> Linspace(int t_min, int t_max, int n)
@@ -365,30 +451,30 @@ namespace MyToDo1.ViewModels
             return result;
         }
 
-        void CreateThresholdComboBox()
-        {
-            string exeDirectory = AppDomain.CurrentDomain.BaseDirectory; // 获取当前 exe 文件所在的目录
-            string processedImagePath = Path.Combine(exeDirectory, "Processed_Image"); // 构建指向 "Processed_Image" 文件夹的路径
-            folderPath = processedImagePath + "\\" + material.ToString() + "-" + time.ToString();
+        //void CreateThresholdComboBox()
+        //{
+        //    string exeDirectory = AppDomain.CurrentDomain.BaseDirectory; // 获取当前 exe 文件所在的目录
+        //    string processedImagePath = Path.Combine(exeDirectory, "Processed_Image"); // 构建指向 "Processed_Image" 文件夹的路径
+        //    folderPath = processedImagePath + "\\" + material.ToString() + "-" + time.ToString();
 
-            string[] fileNames = Directory.GetFiles(folderPath);
-            string parametersFilePath = Path.Combine(folderPath, "parameters.json");
+        //    string[] fileNames = Directory.GetFiles(folderPath);
+        //    string parametersFilePath = Path.Combine(folderPath, "parameters.json");
 
-            if (File.Exists(parametersFilePath))
-            {
-                string jsonContent = File.ReadAllText(parametersFilePath);
-                JObject jsonObj = JObject.Parse(jsonContent);
-                lowThreshold = jsonObj["LowThreshold"] != null ? Convert.ToInt32(jsonObj["LowThreshold"]) : 100;
-                highThreshold = jsonObj["HighThreshold"] != null ? Convert.ToInt32(jsonObj["HighThreshold"]) : 170;
-                number = jsonObj["Number"] != null ? Convert.ToInt32(jsonObj["Number"]) : 5;
-                thresholds = Linspace(lowThreshold, highThreshold, number);
-                ThresholdsItemSource = new ObservableCollection<int>(thresholds);
-            }
-            else
-            {
+        //    if (File.Exists(parametersFilePath))
+        //    {
+        //        string jsonContent = File.ReadAllText(parametersFilePath);
+        //        JObject jsonObj = JObject.Parse(jsonContent);
+        //        lowThreshold = jsonObj["LowThreshold"] != null ? Convert.ToInt32(jsonObj["LowThreshold"]) : 100;
+        //        highThreshold = jsonObj["HighThreshold"] != null ? Convert.ToInt32(jsonObj["HighThreshold"]) : 170;
+        //        number = jsonObj["Number"] != null ? Convert.ToInt32(jsonObj["Number"]) : 5;
+        //        thresholds = Linspace(lowThreshold, highThreshold, number);
+        //        ThresholdsItemSource = new ObservableCollection<int>(thresholds);
+        //    }
+        //    else
+        //    {
 
-            }
-        }
+        //    }
+        //}
 
 
 

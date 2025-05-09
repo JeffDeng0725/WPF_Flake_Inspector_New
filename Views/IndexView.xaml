@@ -15,7 +15,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <StackPanel  Orientation="Horizontal">
+        <StackPanel  Orientation="Horizontal" Grid.Row="0">
             <TextBlock Text="Index" FontSize="30" Margin="20" VerticalAlignment="Bottom" FontWeight="UltraBold"/>
             <TextBlock Name="DateTextBlock" FontSize="20" Margin="0,20" VerticalAlignment="Bottom"/>
         </StackPanel>

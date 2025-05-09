@@ -33,5 +33,12 @@ namespace MyToDo1.Common.Models
             get { return isLiked; }
             set { isLiked = value; }
         }
+
+        private int dtoNumber;
+        public int DtoNumber
+        {
+            get { return dtoNumber; }
+            set { dtoNumber = value; }
+        }
     }
 }

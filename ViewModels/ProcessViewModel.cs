@@ -14,6 +14,9 @@ using Microsoft.Win32;
 using System.IO;
 using System.ComponentModel;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using System.Security.RightsManagement;
+using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 
 namespace MyToDo1.ViewModels
 {
@@ -111,20 +114,12 @@ namespace MyToDo1.ViewModels
             }
         }
 
-        // -------------------------------
-        // 新增文件夹相关逻辑
         private string _inputFolder;
         public string InputFolder
         {
             get => _inputFolder;
-            set
-            {
-                if (_inputFolder != value)
-                {
-                    _inputFolder = value;
-                    OnPropertyChanged(nameof(InputFolder));
-                }
-            }
+            set => SetProperty(ref _inputFolder, value);
+            // SetProperty: 如果值变了，会自动帮你触发基类的 PropertyChanged
         }
 
         private string _outputFolder;
@@ -141,8 +136,113 @@ namespace MyToDo1.ViewModels
             }
         }
 
+        private int _minArea;
+        public int MinArea
+        {
+            get => _minArea;
+            set
+            {
+                _minArea = value;
+                OnPropertyChanged(nameof(MinArea));
+            }
+        }
+
+        private int _minPerimeter;
+        public int MinPerimeter
+        {
+            get => _minPerimeter;
+            set
+            {
+                _minPerimeter = value;
+                OnPropertyChanged(nameof(MinPerimeter));
+            }
+        }
+
+        private int _maxPerimeter;
+        public int MaxPerimeter
+        {
+            get => _maxPerimeter;
+            set
+            {
+                _maxPerimeter = value;
+                OnPropertyChanged(nameof(MaxPerimeter));
+            }
+        }
+
+        private int _maxArea;
+
+        private double _maximumRoughness;
+        public double MaximumRoughness
+        {
+            get => _maximumRoughness;
+            set
+            {
+                _maximumRoughness = value;
+                OnPropertyChanged(nameof(MaximumRoughness));
+            }
+        }
+
+        private double _minimumCircularity;
+        public double MinimumCircularity
+        {
+            get => _minimumCircularity;
+            set
+            {
+                _minimumCircularity = value;
+                OnPropertyChanged(nameof(MinimumCircularity));
+            }
+        }
+
+        private int __reference;
+        public int Reference
+        {
+            get => __reference;
+            set
+            {
+                __reference = value;
+                OnPropertyChanged(nameof(Reference));
+            }
+        }
+
+        private String _setterName;
+        public String SetterName
+        {
+            get => _setterName;
+            set
+            {
+                _setterName = value;
+                OnPropertyChanged(nameof(SetterName));
+            }
+        }
+
+        public ObservableCollection<string> Materials { get; }
+        = new ObservableCollection<string>
+            {
+                "Graphene",
+                "hBN",
+                "MoSe2",
+                "MoTe2",
+                "WSe2",
+                "WTe2"
+            };
+
+        private string _selectedMaterial;
+        public string SelectedMaterial
+        {
+            get => _selectedMaterial;
+            set => SetProperty(ref _selectedMaterial, value);
+        }
+
+        private bool _isProcessing;
+        public bool IsProcessing
+        {
+            get => _isProcessing;
+            set => SetProperty(ref _isProcessing, value);
+        }
+
         public DelegateCommand SelectInputFolderCommand { get; private set; }
         public DelegateCommand SelectOutputFolderCommand { get; private set; }
+        public DelegateCommand RunFlakeDetectionAsyncCommand { get; private set; }
 
 
 
@@ -157,6 +257,19 @@ namespace MyToDo1.ViewModels
             // 初始化文件夹选择命令
             SelectInputFolderCommand = new DelegateCommand(SelectInputFolder);
             SelectOutputFolderCommand = new DelegateCommand(SelectOutputFolder);
+            RunFlakeDetectionAsyncCommand = new DelegateCommand(
+            async () =>
+            {
+                IsProcessing = true;
+                try
+                {
+                    await RunFlakeDetectionAsync();
+                }
+                finally
+                {
+                    IsProcessing = false;
+                }
+            });
 
             // 默认输出文件夹：当前工作目录下的 "Processed_Image"
             string currentDir = Directory.GetCurrentDirectory();
@@ -166,6 +279,21 @@ namespace MyToDo1.ViewModels
                 Directory.CreateDirectory(processedFolder);
             }
             OutputFolder = processedFolder;
+
+            _minArea = 2000;
+            _minPerimeter = 100;
+            _maxPerimeter = 5000;
+            _lowerH = 124;
+            _lowerS = 17;
+            _lowerV = 113;
+            _higherH = 143;
+            _higherS = 119;
+            _higherV = 255;
+            _maximumRoughness = 0.23;
+            _minimumCircularity = 0.2;
+            __reference = 150;
+            SelectedMaterial = Materials.FirstOrDefault();
+
         }
 
         private void NavigateToPreview()
@@ -307,7 +435,9 @@ namespace MyToDo1.ViewModels
             if (folderDialog.ShowDialog() == CommonFileDialogResult.Ok &&
                 !string.IsNullOrWhiteSpace(folderDialog.FileName))
             {
+                // 这样会调用 InputFolder.set 并触发 PropertyChanged
                 InputFolder = folderDialog.FileName;
+                Debug.WriteLine("InputFolder: " + InputFolder);
             }
         }
 
@@ -352,6 +482,63 @@ namespace MyToDo1.ViewModels
                 base.OnNavigatedTo(navigationContext);
             }
             catch (Exception ex) { Debug.WriteLine(ex); }
+        }
+
+        public async Task RunFlakeDetectionAsync()
+        {
+            // 1) Locate your python interpreter and script
+            var pythonExe = "python"; // or full path to python.exe
+            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            var scriptPath = Path.Combine(baseDir, "PythonScripts", "ImageProcess3_HSV.py");
+            if (!File.Exists(scriptPath))
+                throw new FileNotFoundException("Cannot find ImageProcess3_HSV.py", scriptPath);
+
+            // 2) Build the argument string
+            var args = new[]
+            {
+        $"\"{scriptPath}\"",
+        $"--input_folder \"{InputFolder}\"",
+        $"--output_folder \"{OutputFolder}\"",
+        $"--setter_name \"{SetterName}\"",
+        $"--lower_h {LowerH}",
+        $"--lower_s {LowerS}",
+        $"--lower_v {LowerV}",
+        $"--higher_h {HigherH}",
+        $"--higher_s {HigherS}",
+        $"--higher_v {HigherV}",
+        $"--min_area {MinArea}",
+        $"--min_perimeter {MinPerimeter}",
+        $"--max_perimeter {MaxPerimeter}",
+        $"--max_roughness {MaximumRoughness.ToString(System.Globalization.CultureInfo.InvariantCulture)}",
+        $"--min_circularity {MinimumCircularity.ToString(System.Globalization.CultureInfo.InvariantCulture)}",
+        $"--reference {Reference}"
+    };
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = pythonExe,
+                Arguments = string.Join(" ", args),
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true
+            };
+
+            // 3) Start the process and hook output
+            using var proc = new Process { StartInfo = startInfo };
+            proc.OutputDataReceived += (s, e) => { if (e.Data != null) Debug.WriteLine("[py] " + e.Data); };
+            proc.ErrorDataReceived += (s, e) => { if (e.Data != null) Debug.WriteLine("[py-err] " + e.Data); };
+
+            proc.Start();
+            proc.BeginOutputReadLine();
+            proc.BeginErrorReadLine();
+
+            // 4) Await exit
+            await proc.WaitForExitAsync();
+
+            if (proc.ExitCode != 0)
+            {
+                throw new Exception($"flake_detector.py exited with code {proc.ExitCode}");
+            }
         }
 
     }

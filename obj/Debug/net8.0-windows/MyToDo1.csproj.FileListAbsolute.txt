@@ -65,9 +65,11 @@ D:\VisualStudio\Test\MyToDo1\obj\Debug\net8.0-windows\refint\MyToDo1.dll
 D:\VisualStudio\Test\MyToDo1\obj\Debug\net8.0-windows\MyToDo1.pdb
 D:\VisualStudio\Test\MyToDo1\obj\Debug\net8.0-windows\MyToDo1.genruntimeconfig.cache
 D:\VisualStudio\Test\MyToDo1\obj\Debug\net8.0-windows\ref\MyToDo1.dll
+D:\VisualStudio\Test\MyToDo1\bin\Debug\net8.0-windows\PythonScripts\ImageProcess3_HSV.py
 D:\VisualStudio\Test_Copy_Spring2025\MyToDo1\bin\Debug\net8.0-windows\MyToDo1.exe
 D:\VisualStudio\Test_Copy_Spring2025\MyToDo1\bin\Debug\net8.0-windows\Images\UserImages\W-Logo_Purple_RGB.png
 D:\VisualStudio\Test_Copy_Spring2025\MyToDo1\bin\Debug\net8.0-windows\PythonScripts\ImageProcess.py
+D:\VisualStudio\Test_Copy_Spring2025\MyToDo1\bin\Debug\net8.0-windows\PythonScripts\ImageProcess3_HSV.py
 D:\VisualStudio\Test_Copy_Spring2025\MyToDo1\bin\Debug\net8.0-windows\PythonScripts\preview.py
 D:\VisualStudio\Test_Copy_Spring2025\MyToDo1\bin\Debug\net8.0-windows\PythonScripts\preview_server.py
 D:\VisualStudio\Test_Copy_Spring2025\MyToDo1\bin\Debug\net8.0-windows\MyToDo1.deps.json
@@ -125,6 +127,7 @@ D:\VisualStudio\Test_Copy_Spring2025\MyToDo1\obj\Debug\net8.0-windows\MyToDo1.Ge
 D:\VisualStudio\Test_Copy_Spring2025\MyToDo1\obj\Debug\net8.0-windows\MyToDo1.AssemblyInfoInputs.cache
 D:\VisualStudio\Test_Copy_Spring2025\MyToDo1\obj\Debug\net8.0-windows\MyToDo1.AssemblyInfo.cs
 D:\VisualStudio\Test_Copy_Spring2025\MyToDo1\obj\Debug\net8.0-windows\MyToDo1.csproj.CoreCompileInputs.cache
+D:\VisualStudio\Test_Copy_Spring2025\MyToDo1\obj\Debug\net8.0-windows\MyToDo1.sourcelink.json
 D:\VisualStudio\Test_Copy_Spring2025\MyToDo1\obj\Debug\net8.0-windows\MyToDo1.csproj.Up2Date
 D:\VisualStudio\Test_Copy_Spring2025\MyToDo1\obj\Debug\net8.0-windows\MyToDo1.dll
 D:\VisualStudio\Test_Copy_Spring2025\MyToDo1\obj\Debug\net8.0-windows\refint\MyToDo1.dll

@@ -21,6 +21,7 @@ namespace MyToDo1.ViewModels
     {
         private string _title;
         private string _content;
+        private string _dtoPath;
         string folderPath;
         public ToDoViewModel(IContainerProvider provider) : base(provider)
         {
@@ -81,6 +82,7 @@ namespace MyToDo1.ViewModels
             NavigationParameters param = new NavigationParameters();
             param.Add("Material", obj.Title);
             param.Add("Time", obj.Content);
+            param.Add("InputFolder", obj.DtoPath);
 
             regionManager.Regions[PrismManager.MainViewRegionName].RequestNavigate(obj.Target,param);
         }
@@ -174,7 +176,8 @@ namespace MyToDo1.ViewModels
                     {
                         Title = GetMaterialName(folderName),
                         Content = folderName.Substring(GetMaterialName(folderName).Length + 1),
-                        Target = "DetailView"
+                        Target = "DetailView",
+                        DtoPath = folderName
                     };
 
                     // 判断是否已经存在具有相同属性的 ToDoDto

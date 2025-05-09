@@ -13,6 +13,7 @@ namespace MyToDo1.Common.Models
         private string content;
         private int status;
         private string target;
+        private string dtoPath;
 
         public string Title
         {
@@ -33,6 +34,11 @@ namespace MyToDo1.Common.Models
         {
             get { return target; }
             set { target = value; }
+        }
+        public string DtoPath
+        {
+            get { return dtoPath; }
+            set { dtoPath = value; }
         }
     }
 }
